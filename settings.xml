@@ -1,4 +1,3 @@
-@'
 <settings>
     <mirrors>
         <mirror>
@@ -9,4 +8,3 @@
         </mirror>
     </mirrors>
 </settings>
-        '@ | Set-Content -Path settings.xml -Encoding ascii
