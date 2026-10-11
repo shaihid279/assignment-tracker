@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Search')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('students')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Student Search')}"></header>
+
+    <div class="app-content">
+        <div class="mb-4">
+            <h1 class="page-title">Find a student</h1>
+            <p class="page-subtitle">Search by name, roll number or ID card number.</p>
+        </div>
+
+        <div class="panel mb-4">
+            <div class="panel-body">
+                <form th:action="@{/teacher/students}" method="get" class="row g-2">
+                    <div class="col-md-9">
+                        <input type="search" class="form-control" name="q" th:value="${q}" placeholder="Enter a name, roll number or ID card number" aria-label="Search students" autofocus>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1"><i class="bi bi-search me-1"></i> Search</button>
+                        <a class="btn btn-outline-secondary" th:href="@{/teacher/students}" th:if="${!#strings.isEmpty(q)}">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h3 th:text="${#strings.isEmpty(q)} ? 'All students' : 'Search results'">Students</h3>
+                <span class="tag" th:text="${students.size()} + ' found'">0 found</span>
+            </div>
+            <div class="table-responsive" th:if="${!students.isEmpty()}">
+                <table class="table">
+                    <thead>
+                    <tr><th>Student</th><th>Roll number</th><th>ID card number</th><th>Department</th><th class="text-end">Details</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="s : ${students}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="avatar" th:text="${s.initials}">AB</span>
+                                <div><div class="cell-title" th:text="${s.fullName}">Name</div><div class="cell-sub" th:text="${s.email}">email</div></div>
+                            </div>
+                        </td>
+                        <td th:text="${s.rollNumber}">Roll</td>
+                        <td th:text="${s.idCardNumber}">ID</td>
+                        <td th:text="${s.department}">Department</td>
+                        <td class="text-end"><a class="btn btn-outline-primary btn-sm" th:href="@{/teacher/students/{id}(id=${s.id})}">View progress</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${students.isEmpty()}">
+                <i class="bi bi-person-x"></i>
+                <h4>No students match your search</h4>
+                <p class="mb-0">Check the spelling, or try the roll number or ID card number instead.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

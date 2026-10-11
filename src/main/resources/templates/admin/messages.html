@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Contact Messages')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('messages')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Contact Messages')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="mb-4">
+            <h1 class="page-title">Contact messages</h1>
+            <p class="page-subtitle">Messages sent through the Contact Us form.</p>
+        </div>
+
+        <div class="empty-state panel" th:if="${messages.isEmpty()}">
+            <i class="bi bi-inbox"></i>
+            <h4>The inbox is empty</h4>
+            <p class="mb-0">New messages will appear here.</p>
+        </div>
+
+        <div class="d-flex flex-column gap-3" style="max-width: 860px;">
+            <div class="message-card" th:each="m : ${messages}">
+                <div class="d-flex justify-content-between align-items-start gap-2 flex-wrap">
+                    <div>
+                        <div class="cell-title" th:text="${m.subject}">Subject</div>
+                        <div class="small text-muted">
+                            <span th:text="${m.name}">Name</span> &middot;
+                            <a th:href="'mailto:' + ${m.email}" th:text="${m.email}">email</a> &middot;
+                            <span th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span>
+                        </div>
+                    </div>
+                    <span class="status-badge" th:classappend="${m.resolved} ? 'status-completed' : 'status-pending'" th:text="${m.resolved} ? 'Resolved' : 'Open'">Open</span>
+                </div>
+                <p class="mt-2 mb-3" style="white-space: pre-line;" th:text="${m.message}">Message</p>
+                <div class="d-flex gap-2">
+                    <form th:action="@{/admin/messages/{id}/resolve(id=${m.id})}" method="post">
+                        <button type="submit" class="btn btn-outline-primary btn-sm" th:text="${m.resolved} ? 'Reopen' : 'Mark as resolved'">Mark as resolved</button>
+                    </form>
+                    <form th:action="@{/admin/messages/{id}/delete(id=${m.id})}" method="post" onsubmit="return confirm('Delete this message permanently?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

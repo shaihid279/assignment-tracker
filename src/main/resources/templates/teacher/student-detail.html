@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Details')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('students')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Student Details')}"></header>
+
+    <div class="app-content">
+        <a th:href="@{/teacher/students}" class="small fw-semibold"><i class="bi bi-arrow-left"></i> Back to student search</a>
+
+        <div class="row g-4 mt-1">
+            <div class="col-lg-4">
+                <div class="panel">
+                    <div class="panel-body">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="avatar" style="width:52px;height:52px;font-size:1.05rem;" th:text="${student.initials}">AB</span>
+                            <div><div class="cell-title fs-5" th:text="${student.fullName}">Name</div><div class="small text-muted">Student</div></div>
+                        </div>
+                        <dl class="info-list mb-0">
+                            <dt>Roll number</dt><dd th:text="${student.rollNumber}">Roll</dd>
+                            <dt>ID card number</dt><dd th:text="${student.idCardNumber}">ID</dd>
+                            <dt>Department</dt><dd th:text="${student.department}">Department</dd>
+                            <dt>Email</dt><dd class="text-break" th:text="${student.email}">Email</dd>
+                            <dt>Registered on</dt><dd class="mb-0" th:text="${#temporals.format(student.createdAt, 'dd MMM yyyy')}">Date</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="panel">
+                    <div class="panel-header"><h3>Progress on your assignments</h3></div>
+                    <div class="table-responsive" th:if="${!rows.isEmpty()}">
+                        <table class="table">
+                            <thead><tr><th>Assignment</th><th>Due date</th><th>Status</th><th style="min-width: 170px;">Progress</th></tr></thead>
+                            <tbody>
+                            <tr th:each="v : ${rows}">
+                                <td><div class="cell-title" th:text="${v.assignment.title}">Title</div><div class="cell-sub" th:text="${v.assignment.subject}">Subject</div></td>
+                                <td class="text-nowrap">
+                                    <span th:text="${#temporals.format(v.assignment.dueDate, 'dd MMM yyyy')}">01 Jan 2026</span>
+                                    <span class="tag overdue ms-1" th:if="${v.overdue}">Overdue</span>
+                                </td>
+                                <td><span th:replace="~{fragments/layout :: statusBadge(${v.status})}"></span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="flex-grow-1"><div th:replace="~{fragments/layout :: progressBar(${v.percent})}"></div></div>
+                                        <span class="percent-label" th:text="${v.percent} + '%'">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" th:if="${rows.isEmpty()}">
+                        <i class="bi bi-journal-x"></i>
+                        <h4>No assignments published yet</h4>
+                        <p class="mb-0">Progress for this student appears here once you publish an assignment.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

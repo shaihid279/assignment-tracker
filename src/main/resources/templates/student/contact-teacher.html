@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Contact Teacher')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('contact-teacher')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Contact Teacher')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="mb-4">
+            <h1 class="page-title">Contact your teacher</h1>
+            <p class="page-subtitle">Ask about an assignment, request clarification or share an update.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="panel">
+                    <div class="panel-header"><h3>New message</h3></div>
+                    <div class="panel-body">
+                        <div class="alert alert-warning" th:if="${teachers.isEmpty()}">No approved teachers are available yet. Please try again later.</div>
+                        <form th:action="@{/student/contact-teacher}" th:object="${form}" method="post" novalidate th:unless="${teachers.isEmpty()}">
+                            <div class="mb-3">
+                                <label class="form-label" for="teacherId">Teacher</label>
+                                <select class="form-select" id="teacherId" th:field="*{teacherId}" th:classappend="${#fields.hasErrors('teacherId')} ? 'is-invalid'">
+                                    <option value="">Select a teacher</option>
+                                    <option th:each="t : ${teachers}" th:value="${t.id}" th:text="${t.fullName} + ' (' + ${t.department} + ')'">Teacher</option>
+                                </select>
+                                <div class="invalid-feedback" th:errors="*{teacherId}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="subject">Subject</label>
+                                <input type="text" class="form-control" id="subject" th:field="*{subject}" th:classappend="${#fields.hasErrors('subject')} ? 'is-invalid'">
+                                <div class="invalid-feedback" th:errors="*{subject}"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="body">Message</label>
+                                <textarea class="form-control" id="body" rows="5" th:field="*{body}" th:classappend="${#fields.hasErrors('body')} ? 'is-invalid'"></textarea>
+                                <div class="invalid-feedback" th:errors="*{body}"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">Send message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <h2 class="fs-6 fw-bold mb-3">Your conversations</h2>
+                <div class="empty-state panel" th:if="${messages.isEmpty()}">
+                    <i class="bi bi-chat-square-text"></i>
+                    <h4>No messages yet</h4>
+                    <p class="mb-0">Messages you send to teachers and their replies will appear here.</p>
+                </div>
+                <div class="d-flex flex-column gap-3">
+                    <div class="message-card" th:each="m : ${messages}">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div>
+                                <div class="cell-title" th:text="${m.subject}">Subject</div>
+                                <div class="small text-muted">To <span th:text="${m.teacher.fullName}">Teacher</span> &middot; <span th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy, HH:mm')}">Date</span></div>
+                            </div>
+                            <span class="status-badge status-completed" th:if="${m.reply != null}">Replied</span>
+                            <span class="status-badge status-pending" th:if="${m.reply == null}">Awaiting reply</span>
+                        </div>
+                        <p class="mt-2 mb-0" style="white-space: pre-line;" th:text="${m.body}">Message</p>
+                        <div class="reply-box" th:if="${m.reply != null}">
+                            <div class="small fw-bold mb-1">Reply from <span th:text="${m.teacher.fullName}">Teacher</span></div>
+                            <div style="white-space: pre-line;" th:text="${m.reply}">Reply</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

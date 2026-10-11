@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Students')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('students')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Students')}"></header>
+
+    <div class="app-content">
+        <div class="mb-4">
+            <h1 class="page-title">Registered students</h1>
+            <p class="page-subtitle">Search by name, roll number or ID card number.</p>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span class="tag" th:text="${students.size()} + ' students'">0 students</span>
+                <form th:action="@{/admin/students}" method="get" class="d-flex gap-2">
+                    <input type="search" class="form-control form-control-sm" name="q" th:value="${q}" placeholder="Search students" aria-label="Search students" style="min-width: 240px;">
+                    <button class="btn btn-outline-primary btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+            <div class="table-responsive" th:if="${!students.isEmpty()}">
+                <table class="table">
+                    <thead><tr><th>Student</th><th>Roll number</th><th>ID card number</th><th>Department</th><th>Registered</th></tr></thead>
+                    <tbody>
+                    <tr th:each="s : ${students}">
+                        <td><div class="cell-title" th:text="${s.fullName}">Name</div><div class="cell-sub" th:text="${s.email}">email</div></td>
+                        <td th:text="${s.rollNumber}">Roll</td>
+                        <td th:text="${s.idCardNumber}">ID</td>
+                        <td th:text="${s.department}">Department</td>
+                        <td class="text-nowrap" th:text="${#temporals.format(s.createdAt, 'dd MMM yyyy')}">Date</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${students.isEmpty()}">
+                <i class="bi bi-person-x"></i>
+                <h4>No students found</h4>
+                <p class="mb-0">Try a different name, roll number or ID card number.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

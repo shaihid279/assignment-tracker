@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Teacher Approvals')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('teachers')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Teacher Approvals')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="mb-4">
+            <h1 class="page-title">Teacher approvals</h1>
+            <p class="page-subtitle">An approved teacher can sign in at any time without further approval.</p>
+        </div>
+
+        <div class="panel">
+            <div class="table-responsive" th:if="${!teachers.isEmpty()}">
+                <table class="table">
+                    <thead><tr><th>Teacher</th><th>Department</th><th>Registered</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                    <tr th:each="t : ${teachers}">
+                        <td><div class="cell-title" th:text="${t.fullName}">Name</div><div class="cell-sub" th:text="${t.email}">email</div></td>
+                        <td th:text="${t.department}">Department</td>
+                        <td class="text-nowrap" th:text="${#temporals.format(t.createdAt, 'dd MMM yyyy')}">Date</td>
+                        <td>
+                            <span class="status-badge"
+                                  th:classappend="${t.approvalStatus.name() == 'APPROVED'} ? 'status-completed' : (${t.approvalStatus.name() == 'REJECTED'} ? 'status-rejected' : 'status-pending')"
+                                  th:text="${t.approvalStatus.label}">Status</span>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end gap-1">
+                                <form th:if="${t.approvalStatus.name() != 'APPROVED'}" th:action="@{/admin/teachers/{id}/approve(id=${t.id})}" method="post">
+                                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                                </form>
+                                <form th:if="${t.approvalStatus.name() == 'APPROVED'}" th:action="@{/admin/teachers/{id}/reject(id=${t.id})}" method="post"
+                                      onsubmit="return confirm('Revoke access for this teacher?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Revoke access</button>
+                                </form>
+                                <form th:if="${t.approvalStatus.name() == 'PENDING'}" th:action="@{/admin/teachers/{id}/reject(id=${t.id})}" method="post"
+                                      onsubmit="return confirm('Reject this teacher registration?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${teachers.isEmpty()}">
+                <i class="bi bi-person-workspace"></i>
+                <h4>No teachers have registered</h4>
+                <p class="mb-0">Registrations appear here when teachers sign up.</p>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

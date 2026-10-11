@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Student Dashboard')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Dashboard')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+                <h1 class="page-title" th:text="'Welcome back, ' + ${currentUser.firstName}">Welcome back</h1>
+                <p class="page-subtitle">Here is where your assignments stand today.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/student/assignments/new}"><i class="bi bi-plus-lg me-1"></i> Add assignment</a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg"><div class="stat"><div class="label"><i class="bi bi-collection"></i> Total</div><div class="value" th:text="${stats.total}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-amber"><div class="label"><i class="bi bi-hourglass-split"></i> Pending</div><div class="value" th:text="${stats.pending}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-brand"><div class="label"><i class="bi bi-arrow-repeat"></i> In progress</div><div class="value" th:text="${stats.inProgress}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-green"><div class="label"><i class="bi bi-check2-circle"></i> Completed</div><div class="value" th:text="${stats.completed}">0</div></div></div>
+            <div class="col-12 col-lg"><div class="stat accent-red"><div class="label"><i class="bi bi-exclamation-circle"></i> Overdue</div><div class="value" th:text="${stats.overdue}">0</div></div></div>
+        </div>
+
+        <div class="panel mb-4">
+            <div class="panel-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold">Overall completion</span>
+                    <span class="fw-bold" th:text="${stats.completionRate} + '%'">0%</span>
+                </div>
+                <div th:replace="~{fragments/layout :: progressBar(${stats.completionRate})}"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="filter-pills">
+                    <a th:href="@{/student/dashboard(status='all', q=${q})}" th:classappend="${status == 'all'} ? 'active'">All</a>
+                    <a th:href="@{/student/dashboard(status='pending', q=${q})}" th:classappend="${status == 'pending'} ? 'active'">Pending</a>
+                    <a th:href="@{/student/dashboard(status='in_progress', q=${q})}" th:classappend="${status == 'in_progress'} ? 'active'">In progress</a>
+                    <a th:href="@{/student/dashboard(status='completed', q=${q})}" th:classappend="${status == 'completed'} ? 'active'">Completed</a>
+                    <a th:href="@{/student/dashboard(status='overdue', q=${q})}" th:classappend="${status == 'overdue'} ? 'active'">Overdue</a>
+                </div>
+                <form th:action="@{/student/dashboard}" method="get" class="d-flex gap-2">
+                    <input type="hidden" name="status" th:value="${status}">
+                    <input type="search" class="form-control form-control-sm" name="q" th:value="${q}" placeholder="Search name, subject or teacher" aria-label="Search assignments" style="min-width: 240px;">
+                    <button class="btn btn-outline-primary btn-sm" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+
+            <div class="table-responsive" th:if="${!assignments.isEmpty()}">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Subject</th>
+                        <th>Teacher</th>
+                        <th>Due date</th>
+                        <th>Status</th>
+                        <th style="min-width: 190px;">Progress</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${assignments}">
+                        <td>
+                            <div class="cell-title" th:text="${v.assignment.title}">Title</div>
+                            <span class="tag" th:if="${v.assignment.personal}">Personal</span>
+                            <div class="cell-sub text-truncate" th:if="${!#strings.isEmpty(v.assignment.description)}" th:text="${v.assignment.description}">Description</div>
+                        </td>
+                        <td th:text="${v.assignment.subject}">Subject</td>
+                        <td th:text="${v.assignment.teacherDisplayName}">Teacher</td>
+                        <td class="text-nowrap">
+                            <span th:text="${#temporals.format(v.assignment.dueDate, 'dd MMM yyyy')}">01 Jan 2026</span>
+                            <span class="tag overdue ms-1" th:if="${v.overdue}">Overdue</span>
+                        </td>
+                        <td><span th:replace="~{fragments/layout :: statusBadge(${v.status})}"></span></td>
+                        <td>
+                            <form th:action="@{/student/assignments/{id}/progress(id=${v.assignment.id})}" method="post" class="d-flex align-items-center gap-2">
+                                <div class="flex-grow-1"><div th:replace="~{fragments/layout :: progressBar(${v.percent})}"></div></div>
+                                <select name="percent" class="form-select form-select-sm" style="width: 84px;" onchange="this.form.submit()" aria-label="Update progress">
+                                    <option th:each="p : ${#numbers.sequence(0, 100, 25)}" th:value="${p}" th:text="${p} + '%'" th:selected="${p == v.percent}">0%</option>
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end gap-1">
+                                <form th:if="${v.status.name() != 'COMPLETED'}" th:action="@{/student/assignments/{id}/complete(id=${v.assignment.id})}" method="post">
+                                    <button type="submit" class="icon-btn success" title="Mark as completed" aria-label="Mark as completed"><i class="bi bi-check2"></i></button>
+                                </form>
+                                <form th:if="${v.status.name() == 'COMPLETED'}" th:action="@{/student/assignments/{id}/reopen(id=${v.assignment.id})}" method="post">
+                                    <button type="submit" class="icon-btn" title="Move back to pending" aria-label="Move back to pending"><i class="bi bi-arrow-counterclockwise"></i></button>
+                                </form>
+                                <form th:action="@{/student/assignments/{id}/delete(id=${v.assignment.id})}" method="post"
+                                      onsubmit="return confirm('Remove this assignment from your list?');">
+                                    <button type="submit" class="icon-btn danger" title="Delete" aria-label="Delete assignment"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" th:if="${assignments.isEmpty()}">
+                <i class="bi bi-journal-x"></i>
+                <h4>No assignments to show</h4>
+                <p class="mb-3">Assignments published by your teachers appear here automatically. You can also add your own.</p>
+                <a class="btn btn-primary btn-sm" th:href="@{/student/assignments/new}">Add an assignment</a>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

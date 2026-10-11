@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Page not found')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: publicNav}"></nav>
+<section class="section">
+    <div class="container text-center" style="max-width: 560px;">
+        <div class="display-1 fw-bold" style="color: var(--brand);">404</div>
+        <h1 class="page-title mt-2">Page not found</h1>
+        <p class="page-subtitle mb-4">The page you are looking for does not exist or has been moved.</p>
+        <a class="btn btn-primary px-4" th:href="@{/}">Back to home</a>
+    </div>
+</section>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

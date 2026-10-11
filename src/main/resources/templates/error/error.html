@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Something went wrong')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: publicNav}"></nav>
+<section class="section">
+    <div class="container text-center" style="max-width: 560px;">
+        <div class="display-1 fw-bold" style="color: var(--brand);"><i class="bi bi-exclamation-diamond"></i></div>
+        <h1 class="page-title mt-2">Something went wrong</h1>
+        <p class="page-subtitle mb-4">An unexpected error occurred. Please try again, or contact us if the problem continues.</p>
+        <div class="d-flex justify-content-center gap-2">
+            <a class="btn btn-primary px-4" th:href="@{/}">Back to home</a>
+            <a class="btn btn-outline-primary px-4" th:href="@{/contact}">Contact us</a>
+        </div>
+    </div>
+</section>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html> 

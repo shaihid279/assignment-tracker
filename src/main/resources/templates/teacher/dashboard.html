@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Teacher Dashboard')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Dashboard')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+            <div>
+                <h1 class="page-title" th:text="'Welcome, ' + ${currentUser.firstName}">Welcome</h1>
+                <p class="page-subtitle">Publish assignments and follow how your students are progressing.</p>
+            </div>
+            <a class="btn btn-primary" th:href="@{/teacher/assignments/new}"><i class="bi bi-plus-lg me-1"></i> New assignment</a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4"><div class="stat accent-brand"><div class="label"><i class="bi bi-journal-text"></i> My assignments</div><div class="value" th:text="${assignments.size()}">0</div></div></div>
+            <div class="col-md-4"><div class="stat"><div class="label"><i class="bi bi-mortarboard"></i> Registered students</div><div class="value" th:text="${studentCount}">0</div></div></div>
+            <div class="col-md-4"><div class="stat accent-amber"><div class="label"><i class="bi bi-chat-left-text"></i> Messages awaiting reply</div><div class="value" th:text="${awaitingReplies}">0</div></div></div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Published assignments</h3>
+                <a class="btn btn-outline-primary btn-sm" th:href="@{/teacher/students}"><i class="bi bi-search me-1"></i> Search students</a>
+            </div>
+
+            <div class="table-responsive" th:if="${!assignments.isEmpty()}">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Assignment</th>
+                        <th>Subject</th>
+                        <th>Due date</th>
+                        <th>Completed</th>
+                        <th style="min-width: 190px;">Class progress</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${assignments}">
+                        <td>
+                            <a class="cell-title" th:href="@{/teacher/assignments/{id}(id=${v.assignment.id})}" th:text="${v.assignment.title}">Title</a>
+                        </td>
+                        <td th:text="${v.assignment.subject}">Subject</td>
+                        <td class="text-nowrap">
+                            <span th:text="${#temporals.format(v.assignment.dueDate, 'dd MMM yyyy')}">01 Jan 2026</span>
+                            <span class="tag ms-1" th:if="${v.pastDue}">Past due</span>
+                        </td>
+                        <td class="text-nowrap" th:text="${v.completed} + ' of ' + ${v.totalStudents}">0 of 0</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="flex-grow-1"><div th:replace="~{fragments/layout :: progressBar(${v.completionPercent})}"></div></div>
+                                <span class="percent-label" th:text="${v.completionPercent} + '%'">0%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end gap-1">
+                                <a class="icon-btn" th:href="@{/teacher/assignments/{id}(id=${v.assignment.id})}" title="View student progress" aria-label="View student progress"><i class="bi bi-people"></i></a>
+                                <a class="icon-btn" th:href="@{/teacher/assignments/{id}/edit(id=${v.assignment.id})}" title="Edit" aria-label="Edit assignment"><i class="bi bi-pencil"></i></a>
+                                <form th:action="@{/teacher/assignments/{id}/delete(id=${v.assignment.id})}" method="post"
+                                      onsubmit="return confirm('Delete this assignment? Student progress for it will also be removed.');">
+                                    <button type="submit" class="icon-btn danger" title="Delete" aria-label="Delete assignment"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="empty-state" th:if="${assignments.isEmpty()}">
+                <i class="bi bi-journal-plus"></i>
+                <h4>You have not published any assignments</h4>
+                <p class="mb-3">New assignments are visible to every registered student.</p>
+                <a class="btn btn-primary btn-sm" th:href="@{/teacher/assignments/new}">Create the first assignment</a>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

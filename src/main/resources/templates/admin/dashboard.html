@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Administrator Overview')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('dashboard')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('Overview')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="mb-4">
+            <h1 class="page-title">Administrator overview</h1>
+            <p class="page-subtitle">Registrations, approvals and incoming messages at a glance.</p>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg"><div class="stat"><div class="label"><i class="bi bi-mortarboard"></i> Students</div><div class="value" th:text="${studentCount}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-green"><div class="label"><i class="bi bi-person-check"></i> Approved teachers</div><div class="value" th:text="${teacherCount}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-amber"><div class="label"><i class="bi bi-hourglass-split"></i> Awaiting approval</div><div class="value" th:text="${pendingCount}">0</div></div></div>
+            <div class="col-6 col-lg"><div class="stat accent-brand"><div class="label"><i class="bi bi-journal-text"></i> Assignments</div><div class="value" th:text="${assignmentCount}">0</div></div></div>
+            <div class="col-12 col-lg"><div class="stat accent-red"><div class="label"><i class="bi bi-inbox"></i> Open messages</div><div class="value" th:text="${openMessages}">0</div></div></div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="panel">
+                    <div class="panel-header"><h3>Teachers awaiting approval</h3><a class="small fw-semibold" th:href="@{/admin/teachers}">View all teachers</a></div>
+                    <div class="table-responsive" th:if="${!pendingTeachers.isEmpty()}">
+                        <table class="table">
+                            <thead><tr><th>Teacher</th><th>Department</th><th>Requested</th><th class="text-end">Decision</th></tr></thead>
+                            <tbody>
+                            <tr th:each="t : ${pendingTeachers}">
+                                <td><div class="cell-title" th:text="${t.fullName}">Name</div><div class="cell-sub" th:text="${t.email}">email</div></td>
+                                <td th:text="${t.department}">Department</td>
+                                <td class="text-nowrap" th:text="${#temporals.format(t.createdAt, 'dd MMM yyyy')}">Date</td>
+                                <td>
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <form th:action="@{/admin/teachers/{id}/approve(id=${t.id})}" method="post">
+                                            <input type="hidden" name="returnTo" value="dashboard">
+                                            <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                                        </form>
+                                        <form th:action="@{/admin/teachers/{id}/reject(id=${t.id})}" method="post" onsubmit="return confirm('Reject this teacher registration?');">
+                                            <input type="hidden" name="returnTo" value="dashboard">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Reject</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state" th:if="${pendingTeachers.isEmpty()}">
+                        <i class="bi bi-check2-all"></i>
+                        <h4>No pending requests</h4>
+                        <p class="mb-0">New teacher registrations will appear here for review.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="panel">
+                    <div class="panel-header"><h3>Latest contact messages</h3><a class="small fw-semibold" th:href="@{/admin/messages}">Open inbox</a></div>
+                    <div class="list-group list-group-flush" th:if="${!recentMessages.isEmpty()}">
+                        <div class="list-group-item py-3" th:each="m : ${recentMessages}">
+                            <div class="d-flex justify-content-between gap-2">
+                                <div class="cell-title text-truncate" th:text="${m.subject}">Subject</div>
+                                <span class="status-badge" th:classappend="${m.resolved} ? 'status-completed' : 'status-pending'" th:text="${m.resolved} ? 'Resolved' : 'Open'">Open</span>
+                            </div>
+                            <div class="small text-muted"><span th:text="${m.name}">Name</span> &middot; <span th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy')}">Date</span></div>
+                        </div>
+                    </div>
+                    <div class="empty-state" th:if="${recentMessages.isEmpty()}">
+                        <i class="bi bi-inbox"></i>
+                        <h4>No messages yet</h4>
+                        <p class="mb-0">Messages from the contact form appear here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

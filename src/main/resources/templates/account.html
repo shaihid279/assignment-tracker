@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Account')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('account')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar('My Account')}"></header>
+
+    <div class="app-content">
+        <div th:replace="~{fragments/layout :: flash}"></div>
+
+        <div class="mb-4">
+            <h1 class="page-title">My account</h1>
+            <p class="page-subtitle">Your profile details and password.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="panel">
+                    <div class="panel-header"><h3>Profile</h3></div>
+                    <div class="panel-body">
+                        <dl class="info-list mb-0">
+                            <dt>Full name</dt><dd th:text="${currentUser.fullName}">Name</dd>
+                            <dt>Email address</dt><dd class="text-break" th:text="${currentUser.email}">Email</dd>
+                            <dt>Role</dt><dd th:text="${#strings.capitalize(#strings.toLowerCase(currentUser.role.name()))}">Role</dd>
+                            <dt>Department</dt><dd th:text="${currentUser.department}">Department</dd>
+                            <th:block th:if="${currentUser.student}">
+                                <dt>Roll number</dt><dd th:text="${currentUser.rollNumber}">Roll</dd>
+                                <dt>ID card number</dt><dd th:text="${currentUser.idCardNumber}">ID</dd>
+                            </th:block>
+                            <dt>Member since</dt><dd class="mb-0" th:text="${#temporals.format(currentUser.createdAt, 'dd MMM yyyy')}">Date</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="panel">
+                    <div class="panel-header"><h3>Change password</h3></div>
+                    <div class="panel-body">
+                        <form th:action="@{/account/password}" th:object="${passwordForm}" method="post" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label" for="currentPassword">Current password</label>
+                                <input type="password" class="form-control" id="currentPassword" th:field="*{currentPassword}" th:classappend="${#fields.hasErrors('currentPassword')} ? 'is-invalid'" autocomplete="current-password">
+                                <div class="invalid-feedback" th:errors="*{currentPassword}"></div>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="newPassword">New password</label>
+                                    <input type="password" class="form-control" id="newPassword" th:field="*{newPassword}" th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid'" autocomplete="new-password">
+                                    <div class="invalid-feedback" th:errors="*{newPassword}"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="confirmPassword">Confirm new password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}" th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'" autocomplete="new-password">
+                                    <div class="invalid-feedback" th:errors="*{confirmPassword}"></div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">Update password</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

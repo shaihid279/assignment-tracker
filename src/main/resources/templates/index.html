@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: publicNav}"></nav>
+
+<header class="hero">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h1 class="hero-title">Every assignment, from assigned to done.</h1>
+                <p class="hero-text">
+                    Assignment Tracker gives students a clear view of what is due, gives teachers a live picture of
+                    class progress, and gives administrators control over who can publish work.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="btn btn-primary btn-lg px-4" th:href="@{/register/student}">Register as a student</a>
+                    <a class="btn btn-outline-primary btn-lg px-4" th:href="@{/register/teacher}">Register as a teacher</a>
+                </div>
+                <p class="small text-muted mt-3 mb-0">Already registered? <a th:href="@{/login}" class="fw-semibold">Sign in to your account</a></p>
+            </div>
+            <div class="col-lg-6">
+                <div class="preview-card" aria-hidden="true">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Due this week</span>
+                        <span class="status-badge status-progress">3 active</span>
+                    </div>
+                    <div class="preview-row">
+                        <div class="meta"><div class="title">Database Normalisation Worksheet</div><div class="sub">Database Systems &middot; Prof. Mehta</div></div>
+                        <div style="width:110px"><div class="progress progress-slim"><div class="progress-bar" style="width:60%"></div></div></div>
+                    </div>
+                    <div class="preview-row">
+                        <div class="meta"><div class="title">Operating Systems Lab Report</div><div class="sub">Operating Systems &middot; Dr. Kulkarni</div></div>
+                        <span class="status-badge status-completed">Completed</span>
+                    </div>
+                    <div class="preview-row">
+                        <div class="meta"><div class="title">Data Structures Problem Set 4</div><div class="sub">Data Structures &middot; Prof. Joshi</div></div>
+                        <span class="status-badge status-pending">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container">
+        <h2 class="section-title mb-4">Built for the whole classroom</h2>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-list-check"></i></div><h3>Track every assignment</h3><p>See assignment name, subject, teacher and due date in one place, with status marked as pending, in progress or completed.</p></div></div>
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-graph-up-arrow"></i></div><h3>Measure progress</h3><p>Update progress as you work and watch your completion rate and overdue count update on the dashboard.</p></div></div>
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-person-check"></i></div><h3>Verified teachers</h3><p>Teachers register for review. An administrator approves each account once, and access continues without further approvals.</p></div></div>
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-search"></i></div><h3>Find any student quickly</h3><p>Teachers can search by name, roll number or ID card number and review that student's progress on their assignments.</p></div></div>
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-chat-dots"></i></div><h3>Message your teacher</h3><p>Students can send questions directly to a teacher and read the reply in the same place.</p></div></div>
+            <div class="col-md-6 col-lg-4"><div class="feature"><div class="icon"><i class="bi bi-shield-lock"></i></div><h3>Secure by design</h3><p>Role-based access and encrypted passwords keep student, teacher and administrator areas separate.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section pt-0">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-6"><div class="role-card"><h3 class="fw-bold">For students</h3><p>Create your account in a minute, track assignments from your teachers, and add your own personal tasks.</p><a class="btn btn-light fw-semibold" th:href="@{/register/student}">Create student account</a></div></div>
+            <div class="col-lg-6"><div class="role-card light"><h3 class="fw-bold">For teachers</h3><p>Publish assignments, follow class progress and answer student questions after your account is approved.</p><a class="btn btn-primary" th:href="@{/register/teacher}">Request teacher access</a></div></div>
+        </div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

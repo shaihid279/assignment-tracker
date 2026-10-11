@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${pageTitle})}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('new')}"></aside>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<main class="app-main">
+    <header th:replace="~{fragments/layout :: topbar(${pageTitle})}"></header>
+
+    <div class="app-content">
+        <div class="mb-4">
+            <h1 class="page-title" th:text="${pageTitle}">Create Assignment</h1>
+            <p class="page-subtitle">Assignments are visible to all registered students.</p>
+        </div>
+
+        <div class="panel" style="max-width: 760px;">
+            <div class="panel-body">
+                <form th:action="@{${formAction}}" th:object="${form}" method="post" novalidate>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="title">Assignment name</label>
+                            <input type="text" class="form-control" id="title" th:field="*{title}" th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{title}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="subject">Subject</label>
+                            <input type="text" class="form-control" id="subject" th:field="*{subject}" th:classappend="${#fields.hasErrors('subject')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{subject}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="dueDate">Due date</label>
+                            <input type="date" class="form-control" id="dueDate" th:field="*{dueDate}" th:classappend="${#fields.hasErrors('dueDate')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{dueDate}"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="description">Instructions (optional)</label>
+                            <textarea class="form-control" id="description" rows="5" th:field="*{description}" th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{description}"></div>
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">Save assignment</button>
+                            <a class="btn btn-outline-secondary" th:href="@{/teacher/dashboard}">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>
